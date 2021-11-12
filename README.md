@@ -20,7 +20,7 @@
 
 ## Description
 
-[ClickHouse](https://graphql.org/) ClickHouse® is an open-source, high performance columnar OLAP database management system for real-time analytics using SQL. ClickHouse combined with [TypeScript](https://www.typescriptlang.org/) helps you develop better type safety with your ClickHouse queries, giving you end-to-end typing.
+[ClickHouse®](https://graphql.org/) is an open-source, high performance columnar OLAP database management system for real-time analytics using SQL. ClickHouse combined with [TypeScript](https://www.typescriptlang.org/) helps you develop better type safety with your ClickHouse queries, giving you end-to-end typing.
 
 ## Installation
 
