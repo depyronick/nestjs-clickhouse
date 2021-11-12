@@ -32,7 +32,132 @@ $ npm i --save @depyronick/nestjs-clickhouse
 
 ## Quick Start
 
-- to be documented
+### Importing the module
+Once the installation process is complete, we can import the `ClickHouseModule` into the root `AppModule`.
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ClickHouseModule } from '@depyronick/nestjs-clickhouse';
+
+@Module({
+  imports: [
+    ClickHouseModule.register([{
+      name: 'ANALYTICS_SERVER',
+      host: '127.0.0.1',
+      password: '7h3ul71m473p4555w0rd'
+    }])
+  ],
+})
+export class AppModule {}
+```
+The `register()` method will register a ClickHouse client with the specified connection options. See **[ClickHouseOptions](https://github.com/depyronick/nestjs-clickhouse/blob/main/lib/interfaces/ClickHouseModuleOptions.ts "ClickHouseOptions")** object for more information. Each registered client should have an unique `name` definition. The default value for `name` property is `CLICKHOUSE_DEFAULT`. This property will be used as an injection token.
+
+### Interacting with ClickHouse Client
+
+To interact with the ClickHouse server that you have just registered, inject it to your class using the injection token.
+
+```typescript
+constructor(
+	@Inject('ANALYTICS_SERVER') 
+	private analyticsServer: ClickHouseClient
+) {}
+```
+> The `ClickHouseClient` class is imported from the `@depyronick/nestjs-clickhouse`.
+
+There are two methods to interact with the server:
+
+### `ClickHouseClient.query<T>(query: string): Observable<T>`
+
+```typescript
+import { Inject, Injectable } from '@nestjs/common';
+import { ClickHouseClient } from '@depyronick/nestjs-clickhouse';
+
+interface ExampleRowData {
+  timestamp: number;
+  ip: string;
+  userAgent: string;
+  os: string;
+  version: string;
+  // ...
+}
+
+@Injectable()
+export class AppService {
+  constructor(
+    @Inject('ANALYTICS_SERVER')
+    private readonly analyticsServer: ClickHouseClient
+  ) {
+    this
+      .analyticsServer
+      .query<ExampleRowData>("SELECT * FROM visits LIMIT 10")
+      .subscribe({
+        error: (err: any): void => {
+          // called when an error occurred during query
+        },
+        next: (row): void => {
+          // called for each row
+          // the type of row property here is ExampleRowData
+        },
+        complete: (): void => {
+          // called when stream is completed
+        }
+      })
+  }
+}
+```
+
+### `ClickHouseClient.insert<T>(table: string, data: T[]): Observable<any>`
+
+```typescript
+import { Inject, Injectable } from '@nestjs/common';
+import { ClickHouseClient } from '@depyronick/nestjs-clickhouse';
+
+interface ExampleRowData {
+  timestamp: number;
+  ip: string;
+  userAgent: string;
+  os: string;
+  version: string;
+  // ...
+}
+
+@Injectable()
+export class AppService {
+  constructor(
+    @Inject('ANALYTICS_SERVER')
+    private readonly analyticsServer: ClickHouseClient
+  ) {
+    this
+      .analyticsServer
+      .insert<ExampleRowData>("visits", [{
+        timestamp: new Date().getTime(),
+        ip: '127.0.0.1',
+        os: 'OSX',
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36',
+        version: "1.0.0"
+      }])
+      .subscribe({
+        error: (err: any): void => {
+          // called when an error occurred during insert
+        },
+        next: (): void => {
+          // currently next does not emits anything for inserts
+        },
+        complete: (): void => {
+          // called when insert is completed
+        }
+      })
+  }
+}
+```
+
+## Notes
+- This repository will be actively maintained and improved.
+- Currently only supports JSON format. 
+	- Planning to support all applicable formats listed [here](https://clickhouse.com/docs/en/interfaces/formats/ "here").
+- Planning to implement TCP protocol, if ClickHouse decides to [documentate](https://clickhouse.com/docs/en/interfaces/tcp/ "documentate") it.
+- Planning to implement inserts with streams.
+- This library supports http response compressions such as brotli, gzip and deflate.
 
 ## Support
 
