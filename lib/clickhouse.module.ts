@@ -4,7 +4,7 @@ import { ClickHouseClient } from './client/ClickHouseClient';
 import { ClickHouseModuleOptions } from './interfaces/ClickHouseModuleOptions';
 
 @Module({})
-export class ClickhouseModule {
+export class ClickHouseModule {
   static register(options: ClickHouseModuleOptions[]): DynamicModule {
     const clients = (options || []).map(item => {
       if (!item) {
@@ -14,13 +14,13 @@ export class ClickhouseModule {
       }
 
       return {
-        provide: item.serverName,
+        provide: item.name,
         useValue: new ClickHouseClient(item)
       }
     });
 
     return {
-      module: ClickhouseModule,
+      module: ClickHouseModule,
       providers: clients,
       exports: clients,
     };

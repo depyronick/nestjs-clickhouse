@@ -18,8 +18,10 @@ export class ClickHouseSettings {
      * 
      * If a result body is larger than this threshold, the buffer is written to the HTTP channel, and the remaining data is sent directly to the HTTP channel.
      * To ensure that the entire response is buffered, set wait_end_of_query=1. In this case, the data that is not stored in memory will be buffered in a temporary server file.
+     * 
+     * Default: 1
      */
-    public wait_end_of_query?: 0 | 1 = 0;
+    public wait_end_of_query?: 0 | 1 = 1;
 
     /**
      * You can enable response buffering on the server-side. The buffer_size and wait_end_of_query URL parameters are provided for this purpose.
@@ -27,17 +29,19 @@ export class ClickHouseSettings {
      * 
      * If a result body is larger than this threshold, the buffer is written to the HTTP channel, and the remaining data is sent directly to the HTTP channel.
      * To ensure that the entire response is buffered, set wait_end_of_query=1. In this case, the data that is not stored in memory will be buffered in a temporary server file.
+     * 
+     * Default: 1048576
      */
     public buffer_size?: number = 1048576;
 }
 
 export class ClickHouseModuleOptions {
     /**
-     * ClickHouse Connection Name
+     * ClickHouse Server Identifier
      * 
      * Default: CLICKHOUSE_DEFAULT
      */
-    public serverName?: string = 'CLICKHOUSE_DEFAULT';
+    public name?: string = 'CLICKHOUSE_DEFAULT';
 
     /**
      * ClickHouse Host
@@ -86,7 +90,7 @@ export class ClickHouseModuleOptions {
      * 
      * Default: NONE
      */
-    public compression?: ClickHouseCompressionMethod = ClickHouseCompressionMethod.DEFAULT;
+    public compression?: ClickHouseCompressionMethod = ClickHouseCompressionMethod.NONE;
 
     /**
      * Input & Output Data Format

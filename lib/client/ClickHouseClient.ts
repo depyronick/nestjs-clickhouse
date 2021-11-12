@@ -22,11 +22,6 @@ export class ClickHouseClient {
     private logger = new Logger('ClickHouseModule');
 
     /**
-     * Observable Reference Store
-     */
-    private readonly observables: Observable<any>[] = [];
-
-    /**
     * ClickHouse Service
     */
     constructor(
@@ -56,7 +51,7 @@ export class ClickHouseClient {
             database: this.options.database
         };
 
-        if (this.options.compression != ClickHouseCompressionMethod.DEFAULT) {
+        if (this.options.compression != ClickHouseCompressionMethod.NONE) {
             params['enable_http_compression'] = 1;
         }
 
@@ -102,32 +97,9 @@ export class ClickHouseClient {
     }
 
     /**
-     * Handle request errors
-     */
-    private _handleRequestError(reason: any) {
-        if (reason && reason.response) {
-            let err: string = '';
-
-            reason
-                .response
-                .data
-                .on('data', chunk => {
-                    err += chunk.toString('utf8')
-                })
-                .on('end', () => {
-                    this.logger.error(err.trim());
-
-                    err = '';
-                });
-        } else {
-            this.logger.error(reason.code);
-        }
-    }
-
-    /**
      * Create a Readable Query Stream
      */
-    public query<T>(query: string) {
+    public query<T = any>(query: string) {
         return new Observable<T>(subscriber => {
             axios
                 .request(
@@ -156,7 +128,25 @@ export class ClickHouseClient {
                     }
                 })
                 .catch((reason) => {
-                    this._handleRequestError(reason);
+                    if (reason && reason.response) {
+                        let err: string = '';
+
+                        reason
+                            .response
+                            .data
+                            .on('data', chunk => {
+                                err += chunk.toString('utf8')
+                            })
+                            .on('end', () => {
+                                this.logger.error(err.trim());
+                                subscriber.error(err.trim());
+
+                                err = '';
+                            });
+                    } else {
+                        subscriber.error(reason.code);
+                        this.logger.error(reason.code);
+                    }
                 })
         })
     }
@@ -164,7 +154,7 @@ export class ClickHouseClient {
     /**
      * Insert data to table
      */
-    public insert(table: string, data: any[]) {
+    public insert<T = any>(table: string, data: T[]) {
         return new Observable<any>(subscriber => {
             let query = `INSERT INTO ${table}`;
             let _data: any;
@@ -197,14 +187,11 @@ export class ClickHouseClient {
                         .on('end', () => {
                             subscriber.complete();
                         });
-
                 })
-                .catch(c => {
-                    console.log(c)
-                    subscriber.error(c);
-                    this.logger.error(c);
+                .catch(reason => {
+                    subscriber.error(reason);
+                    this.logger.error(reason);
                 })
         });
-
     }
 }
