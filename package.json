@@ -1,11 +1,16 @@
 {
-  "name": "nestjs-clickhouse",
+  "name": "@depyronick/nestjs-clickhouse",
   "version": "1.0.0",
   "description": "ClickHouse Client Module for NestJS",
   "main": "index.js",
   "repository": "https://github.com/depyronick/nestjs-clickhouse",
   "author": "Ali Demirci",
   "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "prepublish:npm": "npm run build",
+    "publish:npm": "npm publish --access public"
+  },
   "devDependencies": {
     "@nestjs/common": "8.2.0",
     "@nestjs/core": "8.2.0",
