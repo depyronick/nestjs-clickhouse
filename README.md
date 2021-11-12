@@ -72,7 +72,7 @@ There are two methods to interact with the server:
 import { Inject, Injectable } from '@nestjs/common';
 import { ClickHouseClient } from '@depyronick/nestjs-clickhouse';
 
-interface ExampleRowData {
+interface VisitsTable {
   timestamp: number;
   ip: string;
   userAgent: string;
@@ -89,14 +89,14 @@ export class AppService {
   ) {
     this
       .analyticsServer
-      .query<ExampleRowData>("SELECT * FROM visits LIMIT 10")
+      .query<VisitsTable>("SELECT * FROM visits LIMIT 10")
       .subscribe({
         error: (err: any): void => {
           // called when an error occurred during query
         },
         next: (row): void => {
           // called for each row
-          // the type of row property here is ExampleRowData
+          // the type of row property here is VisitsTable
         },
         complete: (): void => {
           // called when stream is completed
@@ -108,11 +108,16 @@ export class AppService {
 
 ### `ClickHouseClient.insert<T>(table: string, data: T[]): Observable<any>`
 
+The `insert` method accepts two inputs. 
+- `table` is the name of the table that you'll be inserting data to. 
+	- Table value could be prefixed with database like `analytics_db.visits`.
+- `data: T[]` array of JSON objects to insert.
+
 ```typescript
 import { Inject, Injectable } from '@nestjs/common';
 import { ClickHouseClient } from '@depyronick/nestjs-clickhouse';
 
-interface ExampleRowData {
+interface VisitsTable {
   timestamp: number;
   ip: string;
   userAgent: string;
@@ -129,11 +134,11 @@ export class AppService {
   ) {
     this
       .analyticsServer
-      .insert<ExampleRowData>("visits", [{
+      .insert<VisitsTable>("visits", [{
         timestamp: new Date().getTime(),
         ip: '127.0.0.1',
         os: 'OSX',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36',
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/95.0.4638.69 Safari/537.36',
         version: "1.0.0"
       }])
       .subscribe({
@@ -149,6 +154,39 @@ export class AppService {
       })
   }
 }
+```
+
+## Multiple Clients
+You can register multiple clients in the same application as follows:
+
+```typescript
+@Module({
+  imports: [
+    ClickHouseModule.register([{
+      name: 'ANALYTICS_SERVER',
+      host: '127.0.0.1',
+      password: '7h3ul71m473p4555w0rd'
+    }, {
+      name: 'CHAT_SERVER',
+      host: '192.168.1.110',
+      password: 'ch5ts3rv3Rp455w0rd'
+    }])
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule { }
+```
+Then you can interact with these servers using their assigned injection tokens.
+
+```typescript
+constructor(
+    @Inject('ANALYTICS_SERVER')
+    private analyticsServer: ClickHouseClient,
+
+    @Inject('CHAT_SERVER')
+    private chatServer: ClickHouseClient
+) { }
 ```
 
 ## Notes
