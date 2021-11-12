@@ -1,0 +1,24 @@
+{
+  "name": "nestjs-clickhouse",
+  "version": "1.0.0",
+  "description": "ClickHouse Client Module for NestJS",
+  "main": "index.js",
+  "repository": "https://github.com/depyronick/nestjs-clickhouse",
+  "author": "Ali Demirci",
+  "license": "MIT",
+  "devDependencies": {
+    "@nestjs/common": "8.2.0",
+    "@nestjs/core": "8.2.0",
+    "@types/node": "^16.11.7",
+    "@types/stream-json": "^1.7.1",
+    "rxjs": "^7.4.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^8.0.0",
+    "rxjs": "^7.4.0"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "stream-json": "^1.7.3"
+  }
+}
