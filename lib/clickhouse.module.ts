@@ -1,7 +1,11 @@
 import { DynamicModule, Module } from '@nestjs/common';
 
-import { ClickHouseClient } from './client/ClickHouseClient';
-import { ClickHouseModuleOptions } from './interfaces/ClickHouseModuleOptions';
+import {
+  ClickHouseClient,
+  ClickHouseClientOptions as ClickHouseNodeClientOptions
+} from '@depyronick/clickhouse-client';
+
+export class ClickHouseModuleOptions extends ClickHouseNodeClientOptions { }
 
 @Module({})
 export class ClickHouseModule {
