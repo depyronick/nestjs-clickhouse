@@ -1,6 +1,6 @@
 {
   "name": "@depyronick/nestjs-clickhouse",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "ClickHouse Client Module for NestJS",
   "main": "index.js",
   "repository": "https://github.com/depyronick/nestjs-clickhouse",
@@ -15,7 +15,6 @@
     "@nestjs/common": "8.2.0",
     "@nestjs/core": "8.2.0",
     "@types/node": "^16.11.7",
-    "@types/stream-json": "^1.7.1",
     "rxjs": "^7.4.0",
     "reflect-metadata": "0.1.13"
   },
@@ -25,7 +24,6 @@
     "reflect-metadata": "^0.1.13"
   },
   "dependencies": {
-    "axios": "^0.24.0",
-    "stream-json": "^1.7.3"
+    "@depyronick/clickhouse-client": "^1.0.7"
   }
 }
