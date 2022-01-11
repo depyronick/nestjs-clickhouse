@@ -57,6 +57,8 @@ constructor(
 
 ## Examples
 
+These are only a few examples, please see [@depyronick/clickhouse-client](https://github.com/depyronick/clickhouse-client) for up to date methods.
+
 #### `ClickHouseClient.query<T>(query: string): Observable<T>`
 
 ```typescript
