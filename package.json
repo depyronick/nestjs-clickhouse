@@ -1,6 +1,6 @@
 {
   "name": "@depyronick/nestjs-clickhouse",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "ClickHouse Client Module for NestJS",
   "main": "index.js",
   "repository": "https://github.com/depyronick/nestjs-clickhouse",
