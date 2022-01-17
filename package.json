@@ -22,7 +22,8 @@
   "peerDependencies": {
     "@nestjs/common": "^8.0.0",
     "rxjs": "^7.4.0",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "@depyronick/clickhouse-client": "^1.0.10"
   },
   "dependencies": {
     "@depyronick/clickhouse-client": "^1.0.10"
