@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json",
+    "postbuild": "cp package.json README.md dist/",
     "prepublish:npm": "npm run build",
     "publish:npm": "npm publish --access public"
   },
