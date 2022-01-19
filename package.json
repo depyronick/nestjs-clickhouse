@@ -25,6 +25,6 @@
     "reflect-metadata": "^0.1.13"
   },
   "dependencies": {
-    "@depyronick/clickhouse-client": "^1.0.10"
+    "@depyronick/clickhouse-client": "^1.0.11"
   }
 }
