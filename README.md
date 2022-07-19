@@ -228,6 +228,105 @@ constructor(
 ) { }
 ```
 
+## Async Registration & Async Providers
+
+For example, if you want to wait for the application to accept new connections until the necessary configuration settings for clickhouse are received from an asynchronous target, you can use the `registerAsync` method.
+
+```typescript
+import { Inject, Module } from '@nestjs/common';
+import { ClickHouseModule } from '@depyronick/nestjs-clickhouse';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.development.env'],
+      isGlobal: true,
+    }),
+    ClickHouseModule.registerAsync({
+      useFactory: (config: ConfigService) => {
+        return {
+          host: config.get('CH_HOST'),
+          database: config.get('CH_DB'),
+          password: config.get('CH_PWD'),
+          username: config.get('CH_USERNAME'),
+        };
+      },
+      inject: [ConfigService],
+    }),
+  ],
+  controllers: [],
+  providers: [],
+})
+export class AppModule {}
+```
+
+Then you can use the `CLICKHOUSE_ASYNC_INSTANCE_TOKEN` to inject the `ClickHouseClient` with the asynchronous configuration that you just provided.
+
+```typescript
+import {
+  ClickHouseClient,
+  CLICKHOUSE_ASYNC_INSTANCE_TOKEN,
+} from '@depyronick/nestjs-clickhouse';
+
+export class AppModule {
+  constructor(
+    @Inject(CLICKHOUSE_ASYNC_INSTANCE_TOKEN)
+    private readonly chWithAsyncConfig: ClickHouseClient,
+  ) {
+    this.chWithAsyncConfig
+      .query('SELECT * FROM [TABLE] LIMIT 1')
+      .subscribe((row) => console.log('row', row));
+  }
+}
+```
+
+If you want to define more than one `ClickHouseClient` using `registerAsync` method, you will need to create different modules, and inject `CLICKHOUSE_ASYNC_INSTANCE_TOKEN` into feature modules.
+
+But you don't have to use `registerAsync` method to create asynchronous `ClickHouseClient` instances. You can also use custom providers:
+
+```typescript
+import { Inject, Module } from '@nestjs/common';
+import { ClickHouseClient } from '@depyronick/nestjs-clickhouse';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.development.env'],
+      isGlobal: true,
+    }),
+  ],
+  controllers: [],
+  providers: [
+    {
+      provide: 'CH2',
+      useFactory: (config: ConfigService) => {
+        return new ClickHouseClient({
+          host: config.get('CH2_HOST'),
+          database: config.get('CH2_DB'),
+          password: config.get('CH2_PWD'),
+          username: config.get('CH2_USERNAME'),
+        });
+      },
+      inject: [ConfigService],
+    },
+  ],
+})
+export class AppModule {
+  constructor(
+    @Inject('CH2')
+    private readonly clickhouse: ClickHouseClient,
+  ) {
+    this.clickhouse
+      .query('SELECT * FROM [TABLE] LIMIT 1')
+      .subscribe((row) => console.log('row', row));
+  }
+}
+```
+
+With custom providers, you can create as many as asynchronously loaded clients with the name you `provide`d.
+
 ## Notes
 
 - This repository will be actively maintained and improved.

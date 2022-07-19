@@ -2,18 +2,20 @@ import { DynamicModule, Module, ModuleMetadata, Provider, Type } from '@nestjs/c
 
 import {
   ClickHouseClient,
-  ClickHouseClientOptions as ClickHouseNodeClientOptions
+  ClickHouseClientOptions
 } from '@depyronick/clickhouse-client';
 
-export const CLICKHOUSE_MODULE_OPTIONS = "CLICKHOUSE_MODULE_OPTIONS";
+export class ClickHouseModuleOptions extends ClickHouseClientOptions { }
 
-export class ClickHouseModuleOptions extends ClickHouseNodeClientOptions { }
+export const CLICKHOUSE_ASYNC_INSTANCE_TOKEN = 'CLICKHOUSE_INSTANCE_TOKEN';
+export const CLICKHOUSE_ASYNC_MODULE_OPTIONS = 'CLICKHOUSE_MODULE_OPTIONS';
 
 export interface ClickHouseModuleOptionsFactory {
-  createClickhouseOptions(): Promise<ClickHouseModuleOptions> | ClickHouseModuleOptions;
+  createClickHouseOptions(): Promise<ClickHouseModuleOptions> | ClickHouseModuleOptions;
 }
 
-export interface ClickHouseModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
+export interface ClickHouseModuleAsyncOptions
+  extends Pick<ModuleMetadata, 'imports'> {
   useExisting?: Type<ClickHouseModuleOptionsFactory>;
   useClass?: Type<ClickHouseModuleOptionsFactory>;
   useFactory?: (
@@ -47,37 +49,62 @@ export class ClickHouseModule {
   }
 
   static registerAsync(options: ClickHouseModuleAsyncOptions): DynamicModule {
+    const providers = [
+      ...this.createAsyncProviders(options),
+      {
+        provide: CLICKHOUSE_ASYNC_INSTANCE_TOKEN,
+        useFactory: (options: ClickHouseModuleOptions) => {
+          if (!options) {
+            options = new ClickHouseModuleOptions();
+          } else {
+            options = Object.assign(new ClickHouseModuleOptions(), options);
+          }
+
+          return new ClickHouseClient(options);
+        },
+        inject: [CLICKHOUSE_ASYNC_MODULE_OPTIONS],
+      },
+      ...(options.extraProviders || []),
+    ];
+
     return {
       module: ClickHouseModule,
       imports: options.imports,
-      providers: [
-        ...this.createAsyncProviders(options),
-        ...(options.extraProviders || [])
-      ]
-    }
+      providers: providers,
+      exports: providers
+    };
   }
 
-  private static createAsyncProviders(options: ClickHouseModuleAsyncOptions): Provider[] {
+  private static createAsyncProviders(
+    options: ClickHouseModuleAsyncOptions,
+  ): Provider[] {
     if (options.useExisting || options.useFactory) {
       return [this.createAsyncOptionsProvider(options)];
     }
-
     return [
       this.createAsyncOptionsProvider(options),
       {
         provide: options.useClass,
-        useClass: options.useClass
-      }
-    ]
+        useClass: options.useClass,
+      },
+    ];
   }
 
-  private static createAsyncOptionsProvider(options: ClickHouseModuleAsyncOptions): Provider {
+  private static createAsyncOptionsProvider(
+    options: ClickHouseModuleAsyncOptions,
+  ): Provider {
     if (options.useFactory) {
       return {
-        provide: CLICKHOUSE_MODULE_OPTIONS,
+        provide: CLICKHOUSE_ASYNC_MODULE_OPTIONS,
         useFactory: options.useFactory,
-        inject: options.inject || []
-      }
+        inject: options.inject || [],
+      };
     }
+    return {
+      provide: CLICKHOUSE_ASYNC_MODULE_OPTIONS,
+      useFactory: async (optionsFactory: ClickHouseModuleOptionsFactory) =>
+        optionsFactory.createClickHouseOptions(),
+      inject: [options.useExisting || options.useClass],
+    };
   }
 }
