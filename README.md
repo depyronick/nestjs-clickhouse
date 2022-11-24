@@ -57,7 +57,7 @@ constructor(
 
 ## Examples
 
-These are only a few examples, please see [@depyronick/clickhouse-client](https://github.com/depyronick/clickhouse-client) for up to date methods.
+> ⚠️ These are only a few examples, please see [@depyronick/clickhouse-client](https://github.com/depyronick/clickhouse-client) for up to date methods, like **Parametrized Query Capabilities**.
 
 #### `ClickHouseClient.query<T>(query: string): Observable<T>`
 
@@ -330,8 +330,6 @@ With custom providers, you can create as many as asynchronously loaded clients w
 ## Notes
 
 - This repository will be actively maintained and improved.
-- Currently only supports JSON format.
-  - Planning to support all applicable formats listed [here](https://clickhouse.com/docs/en/interfaces/formats/ 'here').
 - Planning to implement TCP protocol, if ClickHouse decides to [documentate](https://clickhouse.com/docs/en/interfaces/tcp/ 'documentate') it.
 - Planning to implement inserts with streams.
 - This library supports http response compressions such as brotli, gzip and deflate.
