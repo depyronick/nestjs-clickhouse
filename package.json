@@ -1,6 +1,6 @@
 {
   "name": "@depyronick/nestjs-clickhouse",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "ClickHouse Client Module for NestJS",
   "main": "index.js",
   "repository": "https://github.com/depyronick/nestjs-clickhouse",
@@ -22,6 +22,6 @@
     "@nestjs/common": ">=8.4.0"
   },
   "dependencies": {
-    "@depyronick/clickhouse-client": "^2.0.3"
+    "@depyronick/clickhouse-client": "2.0.4"
   }
 }
