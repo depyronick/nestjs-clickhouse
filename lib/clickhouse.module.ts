@@ -23,6 +23,7 @@ export interface ClickHouseModuleAsyncOptions
   ) => Promise<ClickHouseModuleOptions> | ClickHouseModuleOptions;
   inject?: any[];
   extraProviders?: Provider[];
+  name?: string;
 }
 
 @Module({})
@@ -52,7 +53,7 @@ export class ClickHouseModule {
     const providers = [
       ...this.createAsyncProviders(options),
       {
-        provide: CLICKHOUSE_ASYNC_INSTANCE_TOKEN,
+        provide: options.name || CLICKHOUSE_ASYNC_INSTANCE_TOKEN,
         useFactory: (options: ClickHouseModuleOptions) => {
           if (!options) {
             options = new ClickHouseModuleOptions();
