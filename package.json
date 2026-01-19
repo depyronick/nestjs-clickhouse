@@ -12,15 +12,15 @@
     "publish:npm": "npm run build && cd ./dist && npm publish --access public"
   },
   "devDependencies": {
-    "@nestjs/common": "10.3.1",
-    "@nestjs/core": "10.3.1",
+    "@nestjs/common": "^11.1.12",
+    "@nestjs/core": "^11.1.12",
     "@types/node": "20.11.10",
-    "rxjs": "7.8.1",
     "reflect-metadata": "0.1.14",
+    "rxjs": "7.8.1",
     "typescript": "5.3.3"
   },
   "peerDependencies": {
-    "@nestjs/common": "10.3.1"
+    "@nestjs/common": "^11.1.12"
   },
   "dependencies": {
     "@depyronick/clickhouse-client": "2.0.4"
