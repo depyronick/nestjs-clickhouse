@@ -1,4 +1,4 @@
-import { DynamicModule, Module, ModuleMetadata, Provider, Type } from '@nestjs/common';
+import { DynamicModule, Inject, Module, ModuleMetadata, Provider, Type } from '@nestjs/common';
 
 import {
   ClickHouseClient,
@@ -9,6 +9,8 @@ export class ClickHouseModuleOptions extends ClickHouseClientOptions { }
 
 export const CLICKHOUSE_ASYNC_INSTANCE_TOKEN = 'CLICKHOUSE_INSTANCE_TOKEN';
 export const CLICKHOUSE_ASYNC_MODULE_OPTIONS = 'CLICKHOUSE_MODULE_OPTIONS';
+export const InjectClickHouse = (name?: string) =>
+  Inject(name || CLICKHOUSE_ASYNC_INSTANCE_TOKEN);
 
 export interface ClickHouseModuleOptionsFactory {
   createClickHouseOptions(): Promise<ClickHouseModuleOptions> | ClickHouseModuleOptions;

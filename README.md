@@ -281,6 +281,21 @@ export class AppModule {
 }
 ```
 
+You can also use the `InjectClickHouse` helper to avoid importing `Inject` directly:
+
+```typescript
+import { ClickHouseClient, InjectClickHouse } from '@depyronick/nestjs-clickhouse';
+
+export class AppModule {
+  constructor(
+    @InjectClickHouse()
+    private readonly chWithAsyncConfig: ClickHouseClient,
+  ) {}
+}
+```
+
+If you registered a named client, pass its name to `InjectClickHouse('ANALYTICS_SERVER')`.
+
 If you want to define more than one `ClickHouseClient` using `registerAsync` method, you will need to create different modules, and inject `CLICKHOUSE_ASYNC_INSTANCE_TOKEN` into feature modules.
 
 But you don't have to use `registerAsync` method to create asynchronous `ClickHouseClient` instances. You can also use custom providers:
